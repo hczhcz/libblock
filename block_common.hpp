@@ -10,17 +10,22 @@ namespace libblock {
 const auto name_body = '__body';
 const auto name_oncall = '__oncall';
 
-class Type;
-class Code; // ASM or IR
+class Type {
+public:
+};
+
+class Expression {
+public:
+};
 
 class Name {
 public:
-    enum {
+    enum Visibility {
         V_PUBLIC,
         V_PRIVATE
     } visibility;
 
-    enum {
+    enum Mode {
         M_LOCAL,
         M_AST,
         M_STATIC,
@@ -28,7 +33,7 @@ public:
     } mode;
 
     Type *type;
-    Code *value;
+    Expression *expression;
 };
 
 class Block {
@@ -37,6 +42,8 @@ public:
     std::vector<Block *> children;
 
     NameList = std::map<std::string, Name *> members;
+
+    void *entry;
 };
 
 }
