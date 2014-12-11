@@ -7,14 +7,11 @@
 
 namespace libblock {
 
-const auto name_body = '__body';
-const auto name_oncall = '__oncall';
-
 class Type {
 public:
 };
 
-class Expression {
+class Code {
 public:
 };
 
@@ -27,13 +24,12 @@ public:
 
     enum Mode {
         M_LOCAL,
-        M_AST,
+        M_CONST,
         M_STATIC,
         M_FAST
     } mode;
 
     Type *type;
-    Expression *expression;
 };
 
 class Block {
@@ -41,9 +37,10 @@ public:
     Block *parent;
     std::vector<Block *> children;
 
-    NameList = std::map<std::string, Name *> members;
+    std::map<std::string, Name *> members;
 
-    void *entry;
+    Code *code;
+    // void (*entry)(void *data);
 };
 
 }
