@@ -7,9 +7,7 @@
 
 namespace libblock {
 
-class Type {
-public:
-};
+class Block; // forward
 
 class Code {
 public:
@@ -29,18 +27,41 @@ public:
         M_FAST
     } mode;
 
-    Type *type;
+    Block *type;
+    Code *code; // TODO: or auto append?
+};
+
+class Argument {
+public:
+    enum Mode {
+        M_IN,
+        M_OUT,
+        M_VAR
+    } mode;
+
+    Name *name;
 };
 
 class Block {
-public:
+private:
     Block *parent;
     std::vector<Block *> children;
 
-    std::map<std::string, Name *> members;
+    std::multimap<std::string, Name *> members;
+    //std::vector<std::vector<Argument *>, Code *> call; //?
 
-    Code *code;
-    // void (*entry)(void *data);
+public:
+    inline Block(Block *target): parent(target) {}
+
+    // virtual ~Block() {}
+
+    inline void putChild(Block *child) {
+        children.push_back(child);
+    }
+
+    inline Block *getParent() {
+        return parent;
+    }
 };
 
 }
