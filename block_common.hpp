@@ -9,7 +9,7 @@ namespace libblock {
 
 class Block; // forward
 
-class Code {
+class CodeTree {
 public:
 };
 
@@ -28,7 +28,7 @@ public:
     } mode;
 
     Block *type;
-    Code *code; // TODO: or auto append?
+    CodeTree *code;
 };
 
 class Argument {
@@ -42,21 +42,36 @@ public:
     Name *name;
 };
 
+class Interface {
+public:
+    std::vector<Argument *> arguments;
+    CodeTree *code;
+};
+
 class Block {
 private:
     Block *parent;
     std::vector<Block *> children;
-
     std::multimap<std::string, Name *> members;
-    //std::vector<std::vector<Argument *>, Code *> call; //?
+    Interface *interface;
 
 public:
-    inline Block(Block *target): parent(target) {}
+    inline Block(
+        Block *target
+    ): parent(target), interface(nullptr) {}
 
     // virtual ~Block() {}
 
     inline void putChild(Block *child) {
         children.push_back(child);
+    }
+
+    inline void putMember(const std::string &string, Name *object) {
+        members.insert({string, object});
+    }
+
+    inline void setInterface(Interface *object) {
+        interface = object;
     }
 
     inline Block *getParent() {
