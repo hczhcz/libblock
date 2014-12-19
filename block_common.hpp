@@ -8,14 +8,15 @@
 namespace libblock {
 
 // forward
+class Code;
 class Block;
 
 struct name_t {
     std::string id;
 
-    inline name_t(
-        const std::string &to_id
-    ): id(to_id) {}
+    inline name_t(std::string &&to_id): id(std::move(to_id)) {}
+
+    inline name_t(const std::string &to_id): id(to_id) {}
 };
 
 struct argument_t {
@@ -34,33 +35,57 @@ struct argument_t {
 
 class Code {
 public:
-    // context?
-    // AST?
-};
-
-class CodeApply: public Code {
-private:
-    Code *func;
-    std::vector<Code *> argument;
-
-public:
-    // Code *func;
-    // arguments
-};
-
-class CodeLiteral: public Code {
-public:
-    // data
+    // TODO
 };
 
 class CodeAccess: public Code {
 private:
     name_t name;
-    Code *action;
 
 public:
-    inline CodeAccess(const name_t &to_name): name(to_name) {}
+    inline CodeAccess(name_t &&to_name): name(std::move(to_name)) {}
 };
+
+// TODO: Code -> CodeWithData -> Code???
+template <class T>
+class CodeLiteral: public Code {
+private:
+    T value;
+
+public:
+    inline CodeLiteral(T &&to_value): value(std::move(to_value)) {}
+
+    // inline CodeLiteral(const T &to_value): value(to_value) {}
+};
+
+class CodeTuple: public Code {
+private:
+    std::vector<Code *> members;
+
+public:
+    inline CodeTuple(): members() {}
+
+    inline void add(Code *value) {
+        members.push_back(value);
+    }
+};
+
+class CodeApply: public Code {
+private:
+    Code *func;
+    Code *arg;
+
+public:
+    inline CodeApply(
+        Code *to_func, Code *to_arg
+    ): func(to_func), arg(to_arg) {}
+};
+
+// TODO
+
+
+
+
 
 // TODO
 // using NameMap = std::multimap<std::string, NameEntry *>;
