@@ -38,14 +38,6 @@ public:
     // TODO
 };
 
-class CodeAccess: public Code {
-private:
-    name_t name;
-
-public:
-    inline CodeAccess(name_t &&to_name): name(std::move(to_name)) {}
-};
-
 // TODO: Code -> CodeWithData -> Code???
 template <class T>
 class CodeLiteral: public Code {
@@ -63,22 +55,50 @@ private:
     std::vector<Code *> members;
 
 public:
-    inline CodeTuple(): members() {}
-
-    inline void add(Code *value) {
-        members.push_back(value);
+    template <class... ARG>
+    inline CodeTuple(ARG... args): members() {
+        add(args...);
     }
+
+    template <class... ARG>
+    inline void add(Code *value, ARG... args) {
+        members.push_back(value);
+        add(args...);
+    }
+
+    template <std::nullptr_t P = nullptr> // iteration finished
+    inline void add() {}
 };
 
-class CodeApply: public Code {
+// TODO: use CodeCall("__access") ?
+class CodeGet: public Code {
 private:
-    Code *func;
+    name_t name;
+
+public:
+    inline CodeGet(name_t &&to_name): name(std::move(to_name)) {}
+};
+
+class CodeWith: public Code {
+private:
+    Code *target;
+    Code *action;
+
+public:
+    inline CodeWith(
+        Code *to_target, Code *to_action
+    ): target(to_target), action(to_action) {}
+};
+
+class CodeCall: public Code {
+private:
+    Code *target;
     Code *arg;
 
 public:
-    inline CodeApply(
-        Code *to_func, Code *to_arg
-    ): func(to_func), arg(to_arg) {}
+    inline CodeCall(
+        Code *to_target, Code *to_arg
+    ): target(to_target), arg(to_arg) {}
 };
 
 // TODO
