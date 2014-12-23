@@ -98,6 +98,11 @@ public:
     // inline CodeLiteral(const T &to_value): value(to_value) {}
 };
 
+class CodeLabel: public Code {
+public:
+    inline CodeLabel() {}
+};
+
 class NameEntry {
 public:
     enum Visibility {
