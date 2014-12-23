@@ -34,40 +34,25 @@ struct argument_t {
 };
 
 class Code {
-public:
-    // TODO
-};
-
-// TODO: Code -> CodeWithData -> Code???
-template <class T>
-class CodeLiteral: public Code {
 private:
-    T value;
+    Code *next;
 
 public:
-    inline CodeLiteral(T &&to_value): value(std::move(to_value)) {}
+    static inline Code *pack(Code *left, Code *right) {
+        if (left->next) {
+            pack(left->next, right);
+        } else {
+            left->next = right;
+        }
 
-    // inline CodeLiteral(const T &to_value): value(to_value) {}
-};
-
-class CodeTuple: public Code {
-private:
-    std::vector<Code *> members;
-
-public:
-    template <class... ARG>
-    inline CodeTuple(ARG... args): members() {
-        add(args...);
+        return left;
     }
 
-    template <class... ARG>
-    inline void add(Code *value, ARG... args) {
-        members.push_back(value);
-        add(args...);
-    }
+    inline Code(): next(nullptr) {}
 
-    template <std::nullptr_t P = nullptr> // iteration finished
-    inline void add() {}
+    inline Code *getNext() const {
+        return next;
+    }
 };
 
 // TODO: use CodeCall("__access") ?
@@ -99,6 +84,18 @@ public:
     inline CodeCall(
         Code *to_target, Code *to_arg
     ): target(to_target), arg(to_arg) {}
+};
+
+// TODO: Code -> CodeWithData -> Code???
+template <class T>
+class CodeLiteral: public Code {
+private:
+    T value;
+
+public:
+    inline CodeLiteral(T &&to_value): value(std::move(to_value)) {}
+
+    // inline CodeLiteral(const T &to_value): value(to_value) {}
 };
 
 // TODO
