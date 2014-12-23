@@ -98,16 +98,6 @@ public:
     // inline CodeLiteral(const T &to_value): value(to_value) {}
 };
 
-// TODO
-
-
-
-
-
-// TODO
-// using NameMap = std::multimap<std::string, NameEntry *>;
-// using NameRange = std::pair<NameMap::iterator, NameMap::iterator>; // or const?
-
 class NameEntry {
 public:
     enum Visibility {
@@ -122,21 +112,25 @@ public:
         M_FAST
     } mode;
 
-    Block *type;
     Code *code;
 };
 
 class Function {
-public:
+private:
     std::vector<argument_t> arguments;
     Code *code;
+
+public:
+    inline Function() {
+        // TODO
+    }
 };
 
 class Block {
 private:
     Block *parent;
     std::vector<Block *> children;
-    // NameMap members;
+    std::map<std::string, NameEntry *> members;
     Function *function; // could be null!
 
 public:
@@ -150,9 +144,22 @@ public:
         children.push_back(child);
     }
 
-    // inline void putMember(const std::string &id, NameEntry *object) {
-    //     members.insert({id, object});
-    // }
+    inline void putMember(const std::string &id, NameEntry *object) {
+        auto iter = members.find(id);
+        if (iter != members.end()) {
+            if (
+                iter->second->visibility == object->visibility
+                &&
+                iter->second->mode == object->mode
+            ) {
+                CodeCall::pack(iter->second->code, object->code);
+            } else {
+                // TODO: error
+            }
+        } else {
+            members.insert({id, object});
+        }
+    }
 
     inline void setFunction(Function *object) {
         function = object;
