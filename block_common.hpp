@@ -103,6 +103,14 @@ public:
     inline CodeLabel() {}
 };
 
+class CodeGoto: public Code {
+private:
+    CodeLabel *label; // notice: weak reference!!!
+
+public:
+    inline CodeGoto(CodeLabel *to_label): label(to_label) {}
+};
+
 class NameEntry {
 public:
     enum Visibility {
