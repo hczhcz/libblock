@@ -33,6 +33,23 @@ struct argument_t {
     ): mode(to_mode), name(std::move(to_name)) {}
 };
 
+struct entry_t {
+    enum Mode {
+        M_VAR,
+        M_STATIC,
+        M_EXPR,
+        M_FAST
+    } mode;
+
+    bool hidden;
+
+    Code *code;
+
+    inline entry_t(
+        const Mode to_mode, bool to_hidden, Code *to_code
+    ): mode(to_mode), hidden(to_hidden), code(to_code) {}
+};
+
 class Code {
 private:
     Code *next;
@@ -111,21 +128,12 @@ public:
     inline CodeLabelRef(CodeLabel *to_label): label(to_label) {}
 };
 
-class NameEntry {
+class CodeBlockId: public Code {
+private:
+    Block *block;
+
 public:
-    enum Visibility {
-        V_PUBLIC,
-        V_PRIVATE
-    } visibility;
-
-    enum Mode {
-        M_LOCAL,
-        M_CONST,
-        M_STATIC,
-        M_FAST
-    } mode;
-
-    Code *code;
+    inline CodeBlockId(Block *to_block): block(to_block) {}
 };
 
 class Function {
@@ -143,7 +151,7 @@ class Block {
 private:
     Block *parent;
     std::vector<Block *> children;
-    std::map<std::string, NameEntry *> members;
+    std::multimap<name_t, entry_t> members;
     Function *function; // could be null!
 
 public:
@@ -157,22 +165,22 @@ public:
         children.push_back(child);
     }
 
-    inline void putMember(const std::string &id, NameEntry *object) {
-        auto iter = members.find(id);
-        if (iter != members.end()) {
-            if (
-                iter->second->visibility == object->visibility
-                &&
-                iter->second->mode == object->mode
-            ) {
-                CodeCall::pack(iter->second->code, object->code);
-            } else {
-                // TODO: error
-            }
-        } else {
-            members.insert({id, object});
-        }
-    }
+    // inline void putMember(const std::string &id, NameEntry *object) {
+    //     auto iter = members.find(id);
+    //     if (iter != members.end()) {
+    //         if (
+    //             iter->second->visibility == object->visibility
+    //             &&
+    //             iter->second->mode == object->mode
+    //         ) {
+    //             CodeCall::pack(iter->second->code, object->code);
+    //         } else {
+    //             // TODO: error
+    //         }
+    //     } else {
+    //         members.insert({id, object});
+    //     }
+    // }
 
     inline void setFunction(Function *object) {
         function = object;
