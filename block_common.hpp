@@ -33,21 +33,27 @@ struct argument_t {
     ): mode(to_mode), name(std::move(to_name)) {}
 };
 
-struct entry_t {
+struct field_t {
     enum Mode {
+        M_TYPE,
         M_VAR,
         M_STATIC,
         M_EXPR,
         M_FAST
     } mode;
 
+    bool import;
     bool hidden;
 
+    name_t name;
     Code *code;
 
-    inline entry_t(
-        const Mode to_mode, bool to_hidden, Code *to_code
-    ): mode(to_mode), hidden(to_hidden), code(to_code) {}
+    inline field_t(
+        const Mode to_mode, bool to_import, bool to_hidden,
+        name_t &&to_name, Code *to_code
+    ):
+        mode(to_mode), import(to_import), hidden(to_hidden),
+        name(to_name), code(to_code) {}
 };
 
 class Code {
@@ -136,73 +142,42 @@ public:
     inline CodeBlockId(Block *to_block): block(to_block) {}
 };
 
-class Function {
+class Proto {
 private:
     std::vector<argument_t> arguments;
-    Code *code;
+
+    // TODO
+    // not bind with code
+    // body code: expr __body is ??? default <code>
 
 public:
-    inline Function() {
+    inline Proto() {
         // TODO
     }
 };
 
 class Block {
 private:
-    Block *parent;
-    std::vector<Block *> children;
-    std::map<name_t, entry_t> members;
-    Function *function; // could be null!
+    std::vector<field_t> memberType;
+    std::vector<field_t> memberVar;
+    std::vector<field_t> memberStatic;
+    std::vector<field_t> memberExpr;
+    std::vector<field_t> memberFast;
+
+    std::multimap<name_t, field_t *> memberAll;
+    std::multimap<name_t, field_t *> memberPublic;
+    std::vector<field_t *> memberImport;
+
+    Proto *proto; // could be null!
 
 public:
-    inline Block(
-        Block *target
-    ): parent(target), function(nullptr) {}
+    inline Block(): proto(nullptr) {}
 
     // virtual ~Block() {}
 
-    inline void putChild(Block *child) {
-        children.push_back(child);
+    inline void setProto(Proto *object) {
+        proto = object;
     }
-
-    // inline void putMember(const std::string &id, NameEntry *object) {
-    //     auto iter = members.find(id);
-    //     if (iter != members.end()) {
-    //         if (
-    //             iter->second->visibility == object->visibility
-    //             &&
-    //             iter->second->mode == object->mode
-    //         ) {
-    //             CodeCall::pack(iter->second->code, object->code);
-    //         } else {
-    //             // TODO: error
-    //         }
-    //     } else {
-    //         members.insert({id, object});
-    //     }
-    // }
-
-    inline void setFunction(Function *object) {
-        function = object;
-    }
-
-    inline Block *getParent() {
-        return parent;
-    }
-
-    // inline NameRange getMember(const std::string &id) {
-    //     NameRange result = members.equal_range(id);
-
-    //     if (result.first == result.second) {
-    //         // not found
-    //         // TODO: if parent == nullptr, not found
-    //         return parent->getMember(id);
-    //     } else {
-    //         return result;
-    //     }
-
-    //     // TODO: NameRange with path of Blocks'?
-    // }
 };
 
 }
