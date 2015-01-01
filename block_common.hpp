@@ -36,9 +36,9 @@ struct argument_t {
 struct field_t {
     enum Mode {
         M_TYPE,
+        M_EXPR,
         M_VAR,
         M_STATIC,
-        M_EXPR,
         M_FAST
     } mode;
 
@@ -76,6 +76,9 @@ public:
     inline Code *getNext() const {
         return next;
     }
+
+    // TODO
+    virtual void codeGen() = 0;
 };
 
 // TODO: use CodeCall("__access") ?
@@ -85,6 +88,10 @@ private:
 
 public:
     inline CodeGet(name_t &&to_name): name(std::move(to_name)) {}
+
+    virtual void codeGen() {
+        //
+    }
 };
 
 class CodeWith: public Code {
@@ -96,6 +103,10 @@ public:
     inline CodeWith(
         Code *to_target, Code *to_action
     ): target(to_target), action(to_action) {}
+
+    virtual void codeGen() {
+        //
+    }
 };
 
 class CodeCall: public Code {
@@ -107,6 +118,10 @@ public:
     inline CodeCall(
         Code *to_target, Code *to_arg
     ): target(to_target), arg(to_arg) {}
+
+    virtual void codeGen() {
+        //
+    }
 };
 
 // TODO: Code -> CodeWithData -> Code???
@@ -119,11 +134,19 @@ public:
     inline CodeLiteral(T &&to_value): value(std::move(to_value)) {}
 
     // inline CodeLiteral(const T &to_value): value(to_value) {}
+
+    virtual void codeGen() {
+        //
+    }
 };
 
 class CodeLabel: public Code {
 public:
     inline CodeLabel() {}
+
+    virtual void codeGen() {
+        //
+    }
 };
 
 class CodeLabelRef: public Code {
@@ -132,14 +155,22 @@ private:
 
 public:
     inline CodeLabelRef(CodeLabel *to_label): label(to_label) {}
+
+    virtual void codeGen() {
+        //
+    }
 };
 
-class CodeBlockId: public Code {
+class CodeBlock: public Code {
 private:
     Block *block;
 
 public:
-    inline CodeBlockId(Block *to_block): block(to_block) {}
+    inline CodeBlock(Block *to_block): block(to_block) {}
+
+    virtual void codeGen() {
+        //
+    }
 };
 
 class Proto {
@@ -151,8 +182,10 @@ private:
     // body code: expr __body is ??? default <code>
 
 public:
-    inline Proto() {
-        // TODO
+    inline Proto() {}
+
+    inline void putArgument(argument_t &&value) {
+        arguments.push_back(value);
     }
 };
 
@@ -177,6 +210,10 @@ public:
 
     inline void setProto(Proto *object) {
         proto = object;
+    }
+
+    inline void addField(field_t &&field) {
+        //
     }
 };
 
