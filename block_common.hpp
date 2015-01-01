@@ -192,13 +192,13 @@ public:
 class Block {
 private:
     std::vector<field_t> memberType;
+    std::vector<field_t> memberExpr;
     std::vector<field_t> memberVar;
     std::vector<field_t> memberStatic;
-    std::vector<field_t> memberExpr;
     std::vector<field_t> memberFast;
 
-    std::multimap<name_t, field_t *> memberAll;
-    std::multimap<name_t, field_t *> memberPublic;
+    std::multimap<std::string, field_t *> memberAll;
+    std::multimap<std::string, field_t *> memberPublic;
     std::vector<field_t *> memberImport;
 
     Proto *proto; // could be null!
@@ -213,7 +213,41 @@ public:
     }
 
     inline void addField(field_t &&field) {
-        //
+        field_t *ptr;
+
+        switch (field.mode) {
+        case field_t::M_TYPE:
+            memberType.push_back(std::move(field));
+            ptr = &memberType.back();
+            break;
+        case field_t::M_EXPR:
+            memberExpr.push_back(std::move(field));
+            ptr = &memberExpr.back();
+            break;
+        case field_t::M_VAR:
+            memberVar.push_back(std::move(field));
+            ptr = &memberVar.back();
+            break;
+        case field_t::M_STATIC:
+            memberStatic.push_back(std::move(field));
+            ptr = &memberStatic.back();
+            break;
+        case field_t::M_FAST:
+            memberFast.push_back(std::move(field));
+            ptr = &memberFast.back();
+            break;
+        default:
+            // never reach
+            throw;
+        }
+
+        memberAll.insert({ptr->name.id, ptr});
+        if (!ptr->hidden) {
+            memberPublic.insert({ptr->name.id, ptr});
+        }
+        if (ptr->import) {
+            memberImport.push_back(ptr);
+        }
     }
 };
 
