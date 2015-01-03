@@ -61,11 +61,11 @@ private:
     Code *next;
 
 public:
-    static inline Code *pack(Code *left, Code *right) {
-        if (left->next) {
-            pack(left->next, right);
+    static inline Code *pack(Code *&left, Code *right) {
+        if (!left) {
+            left = right;
         } else {
-            left->next = right;
+            pack(left->next, right);
         }
 
         return left;
@@ -81,7 +81,6 @@ public:
     virtual void codeGen() = 0;
 };
 
-// TODO: use CodeCall("__access") ?
 class CodeGet: public Code {
 private:
     name_t name;
@@ -177,10 +176,6 @@ class Proto {
 private:
     std::vector<argument_t> arguments;
 
-    // TODO
-    // not bind with code
-    // body code: expr __body is ??? default <code>
-
 public:
     inline Proto() {}
 
@@ -248,6 +243,10 @@ public:
         if (ptr->import) {
             memberImport.push_back(ptr);
         }
+    }
+
+    inline void finish() {
+        // TODO
     }
 };
 
