@@ -54,6 +54,15 @@ struct field_t {
     ):
         mode(to_mode), import(to_import), hidden(to_hidden),
         name(to_name), code(to_code) {}
+
+    inline field_t(field_t &&source):
+        mode(source.mode), import(source.import), hidden(source.hidden),
+        name(source.name), code(source.code) {
+            source.code = nullptr;
+        }
+
+    // simple destruction
+    inline ~field_t();
 };
 
 class Code {
@@ -73,12 +82,21 @@ public:
 
     inline Code(): next(nullptr) {}
 
+    // destructable (public)
+    virtual ~Code() {
+        if (next) {
+            delete next;
+        }
+    }
+
     inline Code *getNext() const {
         return next;
     }
 
     // TODO
     virtual void codeGen() = 0;
+
+    // virtual void repr(std::ostream &stream, size_t indent = 0) const = 0;
 };
 
 class CodeGet: public Code {
@@ -87,6 +105,8 @@ private:
 
 public:
     inline CodeGet(name_t &&to_name): name(std::move(to_name)) {}
+
+    virtual ~CodeGet() {}
 
     virtual void codeGen() {
         //
@@ -103,6 +123,15 @@ public:
         Code *to_target, Code *to_action
     ): target(to_target), action(to_action) {}
 
+    virtual ~CodeWith() {
+        if (target) {
+            delete target;
+        }
+        if (action) {
+            delete action;
+        }
+    }
+
     virtual void codeGen() {
         //
     }
@@ -117,6 +146,15 @@ public:
     inline CodeCall(
         Code *to_target, Code *to_arg
     ): target(to_target), arg(to_arg) {}
+
+    virtual ~CodeCall() {
+        if (target) {
+            delete target;
+        }
+        if (arg) {
+            delete arg;
+        }
+    }
 
     virtual void codeGen() {
         //
@@ -134,6 +172,8 @@ public:
 
     // inline CodeLiteral(const T &to_value): value(to_value) {}
 
+    virtual ~CodeLiteral() {}
+
     virtual void codeGen() {
         //
     }
@@ -142,6 +182,8 @@ public:
 class CodeLabel: public Code {
 public:
     inline CodeLabel() {}
+
+    virtual ~CodeLabel() {}
 
     virtual void codeGen() {
         //
@@ -155,6 +197,10 @@ private:
 public:
     inline CodeRef(Code *to_code): code(to_code) {}
 
+    virtual ~CodeRef() {
+        // no delete
+    }
+
     virtual void codeGen() {
         //
     }
@@ -166,6 +212,8 @@ private:
 
 public:
     inline CodeBlock(Block *to_block): block(to_block) {}
+
+    virtual ~CodeBlock();
 
     virtual void codeGen() {
         //
@@ -201,7 +249,11 @@ private:
 public:
     inline Block(): proto(nullptr) {}
 
-    // virtual ~Block() {}
+    virtual ~Block() {
+        if (proto) {
+            delete proto;
+        }
+    }
 
     inline void setProto(Proto *object) {
         proto = object;
@@ -249,6 +301,18 @@ public:
         // TODO
     }
 };
+
+// implementation
+
+field_t::~field_t() {
+    if (code) {
+        delete code;
+    }
+}
+
+CodeBlock::~CodeBlock() {
+    delete block;
+}
 
 }
 
