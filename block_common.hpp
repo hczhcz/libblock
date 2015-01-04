@@ -148,12 +148,12 @@ public:
     }
 };
 
-class CodeLabelRef: public Code {
+class CodeRef: public Code {
 private:
-    CodeLabel *label; // notice: weak reference!!!
+    Code *code; // notice: weak reference!!!
 
 public:
-    inline CodeLabelRef(CodeLabel *to_label): label(to_label) {}
+    inline CodeRef(Code *to_code): code(to_code) {}
 
     virtual void codeGen() {
         //
