@@ -20,7 +20,7 @@ private:
 
     inline void putField(const field_t &field) {
         putIndent();
-        out << field.name.id;
+        out << '"' << field.name.id << '"';
 
         if (field.import) {
             out << " import";
@@ -30,7 +30,7 @@ private:
             out << " hidden";
         }
 
-        out << ' ' << (void *) field.code << " := ";
+        out << " " << (void *) field.code << ": ";
         runAll(field.code);
     }
 
@@ -112,20 +112,21 @@ public:
                 code->runVisit(this);
 
                 while (next) {
-                    out << ',';
+                    // out << ',';
 
                     putIndent();
                     next->runVisit(this);
                     next = next->getNext();
                 }
 
-                out << ')';
                 --indent;
+                putIndent();
+                out << ')';
             } else {
                 code->runVisit(this);
             }
         } else {
-            out << '(' << ')';
+            out << "()";
         }
 
         return nullptr;
@@ -146,11 +147,11 @@ public:
     }
 
     virtual Code *run(CodeCall *code) {
-        out << '<';
+        // out << '<';
         runAll(code->getTarget());
         out << (code->isExec() ? " " : " of ");
         runAll(code->getArgument());
-        out << '>';
+        // out << '>';
 
         return nullptr;
     }
@@ -168,7 +169,52 @@ public:
     }
 
     virtual Code *run(CodeLiteral<char> *code) {
-        out << '\'' << code->getValue() << '\'';
+        out << '\'';
+
+        char c = code->getValue();
+        switch (c) {
+        case '\b':
+            out << "\\b";
+            break;
+        case '\t':
+            out << "\\t";
+            break;
+        case '\n':
+            out << "\\n";
+            break;
+        case '\v':
+            out << "\\v";
+            break;
+        case '\f':
+            out << "\\f";
+            break;
+        case '\r':
+            out << "\\r";
+            break;
+        case '\"':
+            out << "\\\"";
+            break;
+        case '\'':
+            out << "\\\'";
+            break;
+        case '\\':
+            out << "\\\\";
+            break;
+        case '\x7F':
+            out << "\\x7F";
+            break;
+        default:
+            if ('\0' <= c && c < '\x10') {
+                out << "\\x0" << ("0123456789ABCDEF"[c & 0xF]);
+            } else if ('\x10' <= c && c < '\x20') {
+                out << "\\x1" << ("0123456789ABCDEF"[c & 0xF]);
+            } else {
+                out << c;
+            }
+            break;
+        }
+
+        out << '\'';
 
         return nullptr;
     }
