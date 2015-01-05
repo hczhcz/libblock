@@ -49,12 +49,12 @@ public:
         out << '{';
         ++indent;
 
-        if (env->proto) {
+        if (const Proto *proto = env->getProto()) {
             putIndent();
             out << "arguments:";
 
             ++indent;
-            for (const argument_t &i: env->proto->getArguments()) {
+            for (const argument_t &i: proto->getArguments()) {
                 putIndent();
 
                 switch (i.mode) {
@@ -79,23 +79,23 @@ public:
 
         putIndent();
         out << "type:";
-        putFields(env->memberType);
+        putFields(env->getMemberType());
 
         putIndent();
         out << "expr:";
-        putFields(env->memberExpr);
+        putFields(env->getMemberExpr());
 
         putIndent();
         out << "var:";
-        putFields(env->memberVar);
+        putFields(env->getMemberVar());
 
         putIndent();
         out << "static:";
-        putFields(env->memberStatic);
+        putFields(env->getMemberStatic());
 
         putIndent();
         out << "fast:";
-        putFields(env->memberFast);
+        putFields(env->getMemberFast());
 
         --indent;
         putIndent();

@@ -40,8 +40,6 @@ public:
     }
 
     virtual Code *runVisit(CodeVisitor *visitor) = 0;
-
-    // virtual void repr(std::ostream &stream, size_t indent = 0) const = 0;
 };
 
 struct name_t {
@@ -117,8 +115,7 @@ public:
 };
 
 class Block {
-// private:
-public: // TODO: make private?
+private:
     std::vector<field_t> memberType;
     std::vector<field_t> memberExpr;
     std::vector<field_t> memberVar;
@@ -131,7 +128,13 @@ public: // TODO: make private?
 
     Proto *proto; // could be null!
 
-// public:
+public:
+    using QueryIter =
+        std::multimap<std::string, field_t *>::const_iterator;
+
+    using QueryPair =
+        std::pair<QueryIter, QueryIter>;
+
     inline Block(): proto(nullptr) {}
 
     virtual ~Block() {
@@ -184,6 +187,50 @@ public: // TODO: make private?
 
     inline void finish() {
         // TODO
+    }
+
+    const std::vector<field_t> &getMemberType() const {
+        return memberType;
+    }
+
+    const std::vector<field_t> &getMemberExpr() const {
+        return memberExpr;
+    }
+
+    const std::vector<field_t> &getMemberVar() const {
+        return memberVar;
+    }
+
+    const std::vector<field_t> &getMemberStatic() const {
+        return memberStatic;
+    }
+
+    const std::vector<field_t> &getMemberFast() const {
+        return memberFast;
+    }
+
+    const std::multimap<std::string, field_t *> &getMemberAll() const {
+        return memberAll;
+    }
+
+    const std::multimap<std::string, field_t *> &getMemberPublic() const {
+        return memberPublic;
+    }
+
+    const std::vector<field_t *> &getMemberImport() const {
+        return memberImport;
+    }
+
+    inline Proto *getProto() const {
+        return proto;
+    }
+
+    inline QueryPair queryAll(const std::string &key) const {
+        return memberAll.equal_range(key);
+    }
+
+    inline QueryPair queryPublic(const std::string &key) const {
+        return memberPublic.equal_range(key);
     }
 };
 
