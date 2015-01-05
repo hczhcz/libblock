@@ -65,6 +65,18 @@ struct field_t {
     inline ~field_t();
 };
 
+class CodeVisitor {
+public:
+    virtual void run(CodeGet *code) = 0;
+    virtual void run(CodeWith *code) = 0;
+    virtual void run(CodeCall *code) = 0;
+    template <class T>
+    virtual void run(CodeLiteral *code) = 0;
+    virtual void run(CodeLabel *code) = 0;
+    virtual void run(CodeRef *code) = 0;
+    virtual void run(CodeBlock *code) = 0;
+};
+
 class Code {
 private:
     Code *next;
@@ -93,8 +105,7 @@ public:
         return next;
     }
 
-    // TODO
-    virtual void codeGen() = 0;
+    virtual void runVisit(CodeVisitor *visitor) = 0;
 
     // virtual void repr(std::ostream &stream, size_t indent = 0) const = 0;
 };
@@ -108,8 +119,8 @@ public:
 
     virtual ~CodeGet() {}
 
-    virtual void codeGen() {
-        //
+    virtual void runVisit(CodeVisitor *visitor) {
+        visitor->run(this);
     }
 };
 
@@ -132,8 +143,8 @@ public:
         }
     }
 
-    virtual void codeGen() {
-        //
+    virtual void runVisit(CodeVisitor *visitor) {
+        visitor->run(this);
     }
 };
 
@@ -156,8 +167,8 @@ public:
         }
     }
 
-    virtual void codeGen() {
-        //
+    virtual void runVisit(CodeVisitor *visitor) {
+        visitor->run(this);
     }
 };
 
@@ -174,8 +185,8 @@ public:
 
     virtual ~CodeLiteral() {}
 
-    virtual void codeGen() {
-        //
+    virtual void runVisit(CodeVisitor *visitor) {
+        visitor->run(this);
     }
 };
 
@@ -185,8 +196,8 @@ public:
 
     virtual ~CodeLabel() {}
 
-    virtual void codeGen() {
-        //
+    virtual void runVisit(CodeVisitor *visitor) {
+        visitor->run(this);
     }
 };
 
@@ -201,8 +212,8 @@ public:
         // no delete
     }
 
-    virtual void codeGen() {
-        //
+    virtual void runVisit(CodeVisitor *visitor) {
+        visitor->run(this);
     }
 };
 
@@ -215,8 +226,8 @@ public:
 
     virtual ~CodeBlock();
 
-    virtual void codeGen() {
-        //
+    virtual void runVisit(CodeVisitor *visitor) {
+        visitor->run(this);
     }
 };
 
