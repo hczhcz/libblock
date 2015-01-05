@@ -1,7 +1,7 @@
 #ifndef BLOCK_VISITOR_TRANSLATE_HPP
 #define BLOCK_VISITOR_TRANSLATE_HPP
 
-#include "block_common.hpp"
+#include "block_code.hpp"
 
 namespace libblock {
 
@@ -29,10 +29,10 @@ public:
         //
     }
 
-    template <class T>
-    virtual void run(CodeLiteral *code) {
-        //
-    }
+    // template <class T>
+    // virtual void run(CodeLiteral *code) {
+    //     //
+    // }
 
     virtual void run(CodeLabel *code) {
         //
