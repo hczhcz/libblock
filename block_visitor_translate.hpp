@@ -17,40 +17,44 @@ public:
         //
     }
 
-    virtual Code *run(CodeGet *code) {
+    virtual Code *runAll(Code *code) {
         //
+    }
+
+    virtual Code *run(CodeGet *code) {
+        return code; // TODO
     }
 
     virtual Code *run(CodeWith *code) {
-        //
+        return code; // TODO
     }
 
     virtual Code *run(CodeCall *code) {
-        //
+        return code; // TODO
     }
 
     virtual Code *run(CodeLiteral<double> *code) {
-        //
+        return code; // TODO
     }
 
     virtual Code *run(CodeLiteral<long> *code) {
-        //
+        return code; // TODO
     }
 
     virtual Code *run(CodeLiteral<char> *code) {
-        //
+        return code; // TODO
     }
 
     virtual Code *run(CodeLabel *code) {
-        //
+        return code; // TODO
     }
 
     virtual Code *run(CodeRef *code) {
-        //
+        return code; // TODO
     }
 
     virtual Code *run(CodeBlock *code) {
-        //
+        return code; // TODO
     }
 };
 

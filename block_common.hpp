@@ -110,10 +110,15 @@ public:
     inline void putArgument(argument_t &&value) {
         arguments.push_back(value);
     }
+
+    inline const std::vector<argument_t> &getArguments() const {
+        return arguments;
+    }
 };
 
 class Block {
-private:
+// private:
+public: // TODO: make private?
     std::vector<field_t> memberType;
     std::vector<field_t> memberExpr;
     std::vector<field_t> memberVar;
@@ -126,7 +131,7 @@ private:
 
     Proto *proto; // could be null!
 
-public:
+// public:
     inline Block(): proto(nullptr) {}
 
     virtual ~Block() {

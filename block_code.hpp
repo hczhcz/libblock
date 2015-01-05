@@ -15,6 +15,7 @@ class CodeBlock;
 
 class CodeVisitor {
 public:
+    virtual Code *runAll(Code *code) = 0;
     virtual Code *run(CodeGet *code) = 0;
     virtual Code *run(CodeWith *code) = 0;
     virtual Code *run(CodeCall *code) = 0;
@@ -34,6 +35,10 @@ public:
     inline CodeGet(name_t &&to_name): name(std::move(to_name)) {}
 
     virtual ~CodeGet() {}
+
+    inline const name_t &getName() const {
+        return name;
+    }
 
     virtual Code *runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
@@ -59,6 +64,14 @@ public:
         }
     }
 
+    inline Code *getTarget() const {
+        return target;
+    }
+
+    inline Code *getAction() const {
+        return action;
+    }
+
     virtual Code *runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
@@ -67,21 +80,33 @@ public:
 class CodeCall: public Code {
 private:
     Code *target;
-    Code *arg;
+    Code *argument;
     bool exec;
 
 public:
     inline CodeCall(
-        Code *to_target, Code *to_arg, bool to_exec
-    ): target(to_target), arg(to_arg), exec(to_exec) {}
+        Code *to_target, Code *to_argument, bool to_exec
+    ): target(to_target), argument(to_argument), exec(to_exec) {}
 
     virtual ~CodeCall() {
         if (target) {
             delete target;
         }
-        if (arg) {
-            delete arg;
+        if (argument) {
+            delete argument;
         }
+    }
+
+    inline Code *getTarget() const {
+        return target;
+    }
+
+    inline Code *getArgument() const {
+        return argument;
+    }
+
+    inline bool isExec() const {
+        return exec;
     }
 
     virtual Code *runVisit(CodeVisitor *visitor) {
@@ -89,8 +114,7 @@ public:
     }
 };
 
-// TODO: Code -> CodeWithData -> Code???
-template <class T>
+template <class T> // T must be a simple type (integer, float, ...)
 class CodeLiteral: public Code {
 private:
     T value;
@@ -101,6 +125,10 @@ public:
     // inline CodeLiteral(const T &to_value): value(to_value) {}
 
     virtual ~CodeLiteral() {}
+
+    inline T getValue() const {
+        return value;
+    }
 
     virtual Code *runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
@@ -129,6 +157,10 @@ public:
         // no delete
     }
 
+    inline Code *getCode() const {
+        return code;
+    }
+
     virtual Code *runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
@@ -143,6 +175,10 @@ public:
 
     virtual ~CodeBlock() {
         delete block;
+    }
+
+    inline Block *getBlock() const {
+        return block;
     }
 
     virtual Code *runVisit(CodeVisitor *visitor) {
