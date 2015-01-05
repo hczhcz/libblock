@@ -58,6 +58,9 @@ public:
                 putIndent();
 
                 switch (i.mode) {
+                case argument_t::Mode::M_TYPE:
+                    out << "type ";
+                    break;
                 case argument_t::Mode::M_IN:
                     out << "in ";
                     break;
@@ -68,7 +71,8 @@ public:
                     out << "var ";
                     break;
                 default:
-                    // never reach
+                    // TODO: never reach
+                    throw;
                     break;
                 }
 
