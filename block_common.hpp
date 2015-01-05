@@ -39,7 +39,7 @@ public:
         return next;
     }
 
-    virtual void runVisit(CodeVisitor *visitor) = 0;
+    virtual Code *runVisit(CodeVisitor *visitor) = 0;
 
     // virtual void repr(std::ostream &stream, size_t indent = 0) const = 0;
 };

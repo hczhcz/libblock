@@ -16,32 +16,39 @@ public:
         //
     }
 
-    virtual void run(CodeGet *code) {
+    virtual Code *run(CodeGet *code) {
         //
     }
 
-    virtual void run(CodeWith *code) {
+    virtual Code *run(CodeWith *code) {
         //
     }
 
-    virtual void run(CodeCall *code) {
+    virtual Code *run(CodeCall *code) {
         //
     }
 
-    // template <class T>
-    // virtual void run(CodeLiteral *code) {
-    //     //
-    // }
-
-    virtual void run(CodeLabel *code) {
+    virtual Code *run(CodeLiteral<double> *code) {
         //
     }
 
-    virtual void run(CodeRef *code) {
+    virtual Code *run(CodeLiteral<long> *code) {
         //
     }
 
-    virtual void run(CodeBlock *code) {
+    virtual Code *run(CodeLiteral<char> *code) {
+        //
+    }
+
+    virtual Code *run(CodeLabel *code) {
+        //
+    }
+
+    virtual Code *run(CodeRef *code) {
+        //
+    }
+
+    virtual Code *run(CodeBlock *code) {
         //
     }
 };
