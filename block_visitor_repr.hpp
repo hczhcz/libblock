@@ -105,7 +105,7 @@ public:
         out << '}';
     }
 
-    virtual Code *runAll(Code *code) {
+    virtual void runAll(Code *code) {
         if (code) {
             if (Code *next = code->getNext()) {
                 out << '(';
@@ -131,47 +131,35 @@ public:
         } else {
             out << "()";
         }
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeGet *code) {
+    virtual void run(CodeGet *code) {
         out << code->getName().id;
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeWith *code) {
+    virtual void run(CodeWith *code) {
         runAll(code->getTarget());
         out << '.';
         runAll(code->getAction());
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeCall *code) {
+    virtual void run(CodeCall *code) {
         // out << '<';
         runAll(code->getTarget());
         out << (code->isExec() ? " " : " of ");
         runAll(code->getArgument());
         // out << '>';
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeLiteral<double> *code) {
+    virtual void run(CodeLiteral<double> *code) {
         out << code->getValue() << 'd';
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeLiteral<long> *code) {
+    virtual void run(CodeLiteral<long> *code) {
         out << code->getValue();
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeLiteral<char> *code) {
+    virtual void run(CodeLiteral<char> *code) {
         out << '\'';
 
         char c = code->getValue();
@@ -218,26 +206,18 @@ public:
         }
 
         out << '\'';
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeLabel *code) {
+    virtual void run(CodeLabel *code) {
         out << '@' << (void *) code;
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeRef *code) {
+    virtual void run(CodeRef *code) {
         out << '&' << (void *) code->getCode();
-
-        return nullptr;
     }
 
-    virtual Code *run(CodeBlock *code) {
-        (void) CodeVisitorRepr(code->getBlock(), out, indent);
-
-        return nullptr;
+    virtual void run(CodeBlock *code) {
+        CodeVisitorRepr(code->getBlock(), out, indent);
     }
 };
 

@@ -16,44 +16,44 @@ public:
         //
     }
 
-    virtual Code *runAll(Code *code) {
-        return code; // TODO
+    virtual void runAll(Code *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeGet *code) {
-        return code; // TODO
+    virtual void run(CodeGet *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeWith *code) {
-        return code; // TODO
+    virtual void run(CodeWith *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeCall *code) {
-        return code; // TODO
+    virtual void run(CodeCall *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeLiteral<double> *code) {
-        return code; // TODO
+    virtual void run(CodeLiteral<double> *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeLiteral<long> *code) {
-        return code; // TODO
+    virtual void run(CodeLiteral<long> *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeLiteral<char> *code) {
-        return code; // TODO
+    virtual void run(CodeLiteral<char> *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeLabel *code) {
-        return code; // TODO
+    virtual void run(CodeLabel *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeRef *code) {
-        return code; // TODO
+    virtual void run(CodeRef *code) {
+        (void) code; // TODO
     }
 
-    virtual Code *run(CodeBlock *code) {
-        return code; // TODO
+    virtual void run(CodeBlock *code) {
+        (void) code; // TODO
     }
 };
 

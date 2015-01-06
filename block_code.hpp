@@ -15,16 +15,16 @@ class CodeBlock;
 
 class CodeVisitor {
 public:
-    virtual Code *runAll(Code *code) = 0;
-    virtual Code *run(CodeGet *code) = 0;
-    virtual Code *run(CodeWith *code) = 0;
-    virtual Code *run(CodeCall *code) = 0;
-    virtual Code *run(CodeLiteral<double> *code) = 0;
-    virtual Code *run(CodeLiteral<long> *code) = 0;
-    virtual Code *run(CodeLiteral<char> *code) = 0;
-    virtual Code *run(CodeLabel *code) = 0;
-    virtual Code *run(CodeRef *code) = 0;
-    virtual Code *run(CodeBlock *code) = 0;
+    virtual void runAll(Code *code) = 0;
+    virtual void run(CodeGet *code) = 0;
+    virtual void run(CodeWith *code) = 0;
+    virtual void run(CodeCall *code) = 0;
+    virtual void run(CodeLiteral<double> *code) = 0;
+    virtual void run(CodeLiteral<long> *code) = 0;
+    virtual void run(CodeLiteral<char> *code) = 0;
+    virtual void run(CodeLabel *code) = 0;
+    virtual void run(CodeRef *code) = 0;
+    virtual void run(CodeBlock *code) = 0;
 };
 
 class CodeGet: public Code {
@@ -40,7 +40,7 @@ public:
         return name;
     }
 
-    virtual Code *runVisit(CodeVisitor *visitor) {
+    virtual void runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
 };
@@ -72,7 +72,7 @@ public:
         return action;
     }
 
-    virtual Code *runVisit(CodeVisitor *visitor) {
+    virtual void runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
 };
@@ -109,7 +109,7 @@ public:
         return exec;
     }
 
-    virtual Code *runVisit(CodeVisitor *visitor) {
+    virtual void runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
 };
@@ -130,7 +130,7 @@ public:
         return value;
     }
 
-    virtual Code *runVisit(CodeVisitor *visitor) {
+    virtual void runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
 };
@@ -141,7 +141,7 @@ public:
 
     virtual ~CodeLabel() {}
 
-    virtual Code *runVisit(CodeVisitor *visitor) {
+    virtual void runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
 };
@@ -161,7 +161,7 @@ public:
         return code;
     }
 
-    virtual Code *runVisit(CodeVisitor *visitor) {
+    virtual void runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
 };
@@ -181,7 +181,7 @@ public:
         return block;
     }
 
-    virtual Code *runVisit(CodeVisitor *visitor) {
+    virtual void runVisit(CodeVisitor *visitor) {
         return visitor->run(this);
     }
 };

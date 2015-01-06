@@ -45,7 +45,7 @@ public:
         return next;
     }
 
-    virtual Code *runVisit(CodeVisitor *visitor) = 0;
+    virtual void runVisit(CodeVisitor *visitor) = 0;
 };
 
 struct name_t {
