@@ -71,9 +71,8 @@ public:
                     out << "var ";
                     break;
                 default:
-                    // TODO: never reach
-                    throw;
-                    break;
+                    // never reach
+                    throw libblock::error_t("internal error");
                 }
 
                 out << i.name.id;

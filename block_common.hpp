@@ -7,6 +7,12 @@
 
 namespace libblock {
 
+struct error_t {
+    std::string info;
+
+    inline error_t(std::string &&to_info): info(std::move(to_info)) {}
+};
+
 // forward
 class CodeVisitor;
 class Block;
@@ -174,7 +180,7 @@ public:
             break;
         default:
             // never reach
-            throw;
+            throw libblock::error_t("internal error");
         }
 
         memberAll.insert({ptr->name.id, ptr});
