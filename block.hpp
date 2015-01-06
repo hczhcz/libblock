@@ -3,7 +3,7 @@
 
 // #include "block_common.hpp"
 #include "block_visitor_repr.hpp"
-#include "block_visitor_typeinfer.hpp"
+#include "block_visitor_infer.hpp"
 #include "block_visitor_translate.hpp"
 
 namespace libblock {

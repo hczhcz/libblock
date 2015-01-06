@@ -1,23 +1,26 @@
-#ifndef BLOCK_VISITOR_TYPEINFER_HPP
-#define BLOCK_VISITOR_TYPEINFER_HPP
+#ifndef BLOCK_VISITOR_INFER_HPP
+#define BLOCK_VISITOR_INFER_HPP
 
 #include "block_code.hpp"
 
 namespace libblock {
 
-class CodeVisitorTypeInfer: public CodeVisitor {
+class CodeVisitorInfer: public CodeVisitor {
 private:
     Block *env;
 
 public:
-    CodeVisitorTypeInfer(
+    CodeVisitorInfer(
         Block *to_env
     ): env(to_env) {
         //
     }
 
     virtual void runAll(Code *code) {
-        (void) code; // TODO
+        if (code) {
+            code->runVisit(this);
+            runAll(code->getNext());
+        }
     }
 
     virtual void run(CodeGet *code) {
