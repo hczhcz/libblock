@@ -10,7 +10,6 @@ class CodeWith;
 class CodeCall;
 template <class T> class CodeLiteral;
 class CodeLabel;
-class CodeRef;
 class CodeBlock;
 
 class CodeVisitor {
@@ -23,7 +22,6 @@ public:
     virtual void run(CodeLiteral<long> *code) = 0;
     virtual void run(CodeLiteral<char> *code) = 0;
     virtual void run(CodeLabel *code) = 0;
-    virtual void run(CodeRef *code) = 0;
     virtual void run(CodeBlock *code) = 0;
 };
 
@@ -136,29 +134,16 @@ public:
 };
 
 class CodeLabel: public Code {
+private:
+    size_t id;
+
 public:
-    inline CodeLabel() {}
+    inline CodeLabel(size_t to_id): id(to_id) {}
 
     virtual ~CodeLabel() {}
 
-    virtual void runVisit(CodeVisitor *visitor) {
-        return visitor->run(this);
-    }
-};
-
-class CodeRef: public Code {
-private:
-    Code *code; // notice: weak reference!!!
-
-public:
-    inline CodeRef(Code *to_code): code(to_code) {}
-
-    virtual ~CodeRef() {
-        // no delete
-    }
-
-    inline Code *getCode() const {
-        return code;
+    inline size_t getId() {
+        return id;
     }
 
     virtual void runVisit(CodeVisitor *visitor) {

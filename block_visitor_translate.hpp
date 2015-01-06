@@ -46,11 +46,7 @@ public:
     }
 
     virtual void run(CodeLabel *code) {
-        (void) code; // TODO
-    }
-
-    virtual void run(CodeRef *code) {
-        (void) code; // TODO
+        out << code->getId();
     }
 
     virtual void run(CodeBlock *code) {

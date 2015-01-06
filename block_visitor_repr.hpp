@@ -209,11 +209,7 @@ public:
     }
 
     virtual void run(CodeLabel *code) {
-        out << '@' << (void *) code;
-    }
-
-    virtual void run(CodeRef *code) {
-        out << '&' << (void *) code->getCode();
+        out << '@' << code->getId();
     }
 
     virtual void run(CodeBlock *code) {

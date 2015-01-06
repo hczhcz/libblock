@@ -9,6 +9,8 @@ class CodeVisitorInfer: public CodeVisitor {
 private:
     Block *env;
 
+    bool ok;
+
 public:
     CodeVisitorInfer(
         Block *to_env
@@ -48,10 +50,6 @@ public:
     }
 
     virtual void run(CodeLabel *code) {
-        (void) code; // TODO
-    }
-
-    virtual void run(CodeRef *code) {
         (void) code; // TODO
     }
 
