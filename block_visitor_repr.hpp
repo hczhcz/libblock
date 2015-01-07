@@ -31,7 +31,7 @@ private:
         }
 
         out << " " << (void *) field.code << ": ";
-        runAll(field.code);
+        runAll(field.code, false);
     }
 
     inline void putFields(const std::vector<field_t> &fields) {
@@ -105,7 +105,7 @@ public:
         out << '}';
     }
 
-    virtual void runAll(Code *code) {
+    inline void runAll(Code *code, bool full) {
         if (code) {
             if (Code *next = code->getNext()) {
                 out << '(';
@@ -126,7 +126,13 @@ public:
                 putIndent();
                 out << ')';
             } else {
+                if (full) {
+                    out << '(';
+                }
                 code->runVisit(this);
+                if (full) {
+                    out << ')';
+                }
             }
         } else {
             out << "()";
@@ -138,16 +144,16 @@ public:
     }
 
     virtual void run(CodeWith *code) {
-        runAll(code->getTarget());
+        runAll(code->getTarget(), false);
         out << '.';
-        runAll(code->getAction());
+        runAll(code->getAction(), false);
     }
 
     virtual void run(CodeCall *code) {
         // out << '<';
-        runAll(code->getTarget());
+        runAll(code->getTarget(), false);
         out << (code->isExec() ? " " : " of ");
-        runAll(code->getArgument());
+        runAll(code->getArgument(), true);
         // out << '>';
     }
 
@@ -213,7 +219,12 @@ public:
     }
 
     virtual void run(CodeBlock *code) {
-        CodeVisitorRepr(code->getBlock(), out, indent);
+        out << "block " << (void *) code->getBlock() << ' ';
+        if (code->isOwn()) {
+            CodeVisitorRepr(code->getBlock(), out, indent);
+        } else {
+            out << "{...}";
+        }
     }
 };
 

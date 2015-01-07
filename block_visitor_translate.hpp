@@ -17,7 +17,7 @@ public:
         //
     }
 
-    virtual void runAll(Code *code) {
+    inline void runAll(Code *code) {
         (void) code; // TODO
     }
 
@@ -34,19 +34,19 @@ public:
     }
 
     virtual void run(CodeLiteral<double> *code) {
-        (void) code; // TODO
+        out << code->getValue() << 'd';
     }
 
     virtual void run(CodeLiteral<long> *code) {
-        (void) code; // TODO
+        out << code->getValue();
     }
 
     virtual void run(CodeLiteral<char> *code) {
-        (void) code; // TODO
+        out << (long) code->getValue(); // TODO: ???
     }
 
     virtual void run(CodeLabel *code) {
-        out << code->getId();
+        out << code->getId(); // TODO
     }
 
     virtual void run(CodeBlock *code) {

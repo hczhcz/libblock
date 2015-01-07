@@ -18,7 +18,7 @@ public:
         //
     }
 
-    virtual void runAll(Code *code) {
+    inline void runAll(Code *code) {
         if (code) {
             code->runVisit(this);
             runAll(code->getNext());

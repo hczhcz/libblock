@@ -14,7 +14,6 @@ class CodeBlock;
 
 class CodeVisitor {
 public:
-    virtual void runAll(Code *code) = 0;
     virtual void run(CodeGet *code) = 0;
     virtual void run(CodeWith *code) = 0;
     virtual void run(CodeCall *code) = 0;
