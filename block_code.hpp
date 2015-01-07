@@ -141,7 +141,7 @@ public:
 
     virtual ~CodeLabel() {}
 
-    inline size_t getId() {
+    inline size_t getId() const {
         return id;
     }
 
@@ -153,16 +153,25 @@ public:
 class CodeBlock: public Code {
 private:
     Block *block;
+    bool own;
 
 public:
-    inline CodeBlock(Block *to_block): block(to_block) {}
+    inline CodeBlock(
+        Block *to_block, bool to_own
+    ): block(to_block), own(to_own) {}
 
     virtual ~CodeBlock() {
-        delete block;
+        if (own) {
+            delete block;
+        }
     }
 
     inline Block *getBlock() const {
         return block;
+    }
+
+    inline bool isOwn() const {
+        return own;
     }
 
     virtual void runVisit(CodeVisitor *visitor) {

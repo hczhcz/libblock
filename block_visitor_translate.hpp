@@ -5,6 +5,7 @@
 
 namespace libblock {
 
+template <class NAME>
 class CodeVisitorTranslate: public CodeVisitor {
 private:
     Block *env;
