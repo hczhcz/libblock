@@ -125,6 +125,23 @@ public:
     }
 };
 
+class BlockInstance {
+private:
+    Block *block;
+    std::vector<BlockInstance *> arguments;
+
+public:
+    inline BlockInstance(Block *to_block): block(to_block) {}
+
+    inline void putArgument(BlockInstance *value) {
+        arguments.push_back(value);
+    }
+
+    inline const std::vector<BlockInstance *> &getArguments() const {
+        return arguments;
+    }
+};
+
 class Block {
 private:
     std::vector<field_t> memberType;
@@ -137,7 +154,8 @@ private:
     std::multimap<std::string, field_t *> memberPublic;
     std::vector<field_t *> memberImport;
 
-    Proto *proto; // could be null!
+    Proto *proto;
+    std::vector<BlockInstance *> instances; // TODO
 
 public:
     using QueryIter =

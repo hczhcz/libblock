@@ -49,36 +49,33 @@ public:
         out << '{';
         ++indent;
 
-        if (const Proto *proto = env->getProto()) {
+        putIndent();
+        out << "arguments:";
+        ++indent;
+        for (const argument_t &i: env->getProto()->getArguments()) {
             putIndent();
-            out << "arguments:";
 
-            ++indent;
-            for (const argument_t &i: proto->getArguments()) {
-                putIndent();
-
-                switch (i.mode) {
-                case argument_t::Mode::M_TYPE:
-                    out << "type ";
-                    break;
-                case argument_t::Mode::M_IN:
-                    out << "in ";
-                    break;
-                case argument_t::Mode::M_OUT:
-                    out << "out ";
-                    break;
-                case argument_t::Mode::M_VAR:
-                    out << "var ";
-                    break;
-                default:
-                    // never reach
-                    throw libblock::error_t("internal error");
-                }
-
-                out << i.name.id;
+            switch (i.mode) {
+            case argument_t::Mode::M_TYPE:
+                out << "type ";
+                break;
+            case argument_t::Mode::M_IN:
+                out << "in ";
+                break;
+            case argument_t::Mode::M_OUT:
+                out << "out ";
+                break;
+            case argument_t::Mode::M_VAR:
+                out << "var ";
+                break;
+            default:
+                // never reach
+                throw libblock::error_t("internal error");
             }
-            --indent;
+
+            out << i.name.id;
         }
+        --indent;
 
         putIndent();
         out << "type:";
