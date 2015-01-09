@@ -52,7 +52,7 @@ public:
         putIndent();
         out << "arguments:";
         ++indent;
-        for (const argument_t &i: env->getProto()->getArguments()) {
+        for (const argument_t &i: env->getArguments()) {
             putIndent();
 
             switch (i.mode) {

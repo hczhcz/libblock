@@ -109,22 +109,6 @@ struct field_t {
     }
 };
 
-class Proto {
-private:
-    std::vector<argument_t> arguments;
-
-public:
-    inline Proto() {}
-
-    inline void putArgument(argument_t &&value) {
-        arguments.push_back(value);
-    }
-
-    inline const std::vector<argument_t> &getArguments() const {
-        return arguments;
-    }
-};
-
 class BlockInstance {
 private:
     Block *block;
@@ -154,7 +138,7 @@ private:
     std::multimap<std::string, field_t *> memberPublic;
     std::vector<field_t *> memberImport;
 
-    Proto *proto;
+    std::vector<argument_t> arguments;
     std::vector<BlockInstance *> instances; // TODO
 
 public:
@@ -164,16 +148,12 @@ public:
     using QueryPair =
         std::pair<QueryIter, QueryIter>;
 
-    inline Block(): proto(nullptr) {}
+    inline Block() {}
 
     virtual ~Block() {
-        if (proto) {
-            delete proto;
+        for (BlockInstance *iter: instances) {
+            delete iter;
         }
-    }
-
-    inline void setProto(Proto *object) {
-        proto = object;
     }
 
     inline void addField(field_t &&field) {
@@ -214,6 +194,10 @@ public:
         }
     }
 
+    inline void addArgument(argument_t &&value) {
+        arguments.push_back(value);
+    }
+
     inline void finish() {
         // TODO
     }
@@ -250,16 +234,16 @@ public:
         return memberImport;
     }
 
-    inline Proto *getProto() const {
-        return proto;
-    }
-
     inline QueryPair queryAll(const std::string &key) const {
         return memberAll.equal_range(key);
     }
 
     inline QueryPair queryPublic(const std::string &key) const {
         return memberPublic.equal_range(key);
+    }
+
+    inline const std::vector<argument_t> &getArguments() const {
+        return arguments;
     }
 };
 
