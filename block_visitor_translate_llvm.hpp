@@ -41,9 +41,27 @@ private:
     //         represent the type in a naive way
     std::vector<std::string> type;
     std::vector<size_t> type_array;
+    size_t tot_array;
 
     std::vector<llvm::Value *> value_tuple;
     llvm::Value *value;
+    std::string value_name;
+
+    inline void runField(const field_t &field) {
+        type.clear();
+        type_array.clear();
+        type_array.push_back(1);
+        runAll(field.code);
+
+        if (type_array.size() == 1) {
+            tot_array = 0;
+        } else {
+            tot_array = 1;
+            for (size_t i: type_array) {
+                tot_array *= i;
+            }
+        }
+    }
 
 public:
     CodeVisitorTranslateLLVM(
@@ -56,20 +74,36 @@ public:
         }
         // implemented integer-like argument only
         // pass by value ("var" and "out" semantics are not implemented)
-        func = gen.func("Block_" + std::to_string((size_t) env), v, "int");
+        func = gen.func("block_" + std::to_string((size_t) env), v, "int");
+
+        // !!!
+        code_current = nullptr;
 
         // (fake) compile-time execution
         comptime = true;
         for (const field_t &i: env->getMemberVar()) {
-            gen.identifier(i.name.id);
+            runField(i);
+            std::cout << "var " << i.name.id << " [" << tot_array << "]\n";
+            gen.identifier1(i.name.id, tot_array);
         }
         for (const field_t &i: env->getMemberFast()) {
-            gen.identifier(i.name.id);
+            runField(i);
+            std::cout << "fast " << i.name.id << " [" << tot_array << "]\n";
+            gen.identifier1(i.name.id, tot_array);
         }
         for (const field_t &i: env->getMemberStatic()) {
-            gen.identifier(i.name.id);
+            runField(i);
+            std::cout << "static " << i.name.id << " [" << tot_array << "]\n";
+            gen.globalIdentifier1(i.name.id, tot_array);
         }
-        // TODO: M_TYPE and M_EXPR fields? M_VAR, M_OUT and M_TYPE arguments?
+        for (const field_t &i: env->getMemberType()) {
+            runField(i);
+        }
+        // for (const field_t &i: env->getMemberExpr()) {
+        //     runField(i);
+        // }
+
+        // TODO: M_VAR, M_OUT and M_TYPE arguments?
 
         // code generation
         comptime = false;
@@ -77,10 +111,14 @@ public:
     }
 
     inline void runAll(Code *code) {
-        if (code) {
+        value_tuple.clear();
+        while (code) {
+            value = nullptr;
             code->runVisit(this);
-            value_tuple.push_back(value);
-            runAll(code->getNext());
+            if (value) {
+                value_tuple.push_back(value);
+            }
+            code = code->getNext();
         }
     }
 
@@ -88,7 +126,12 @@ public:
         if (comptime) {
             type.push_back(code->getName().id);
         } else {
-            value = gen.nvt[code->getName().id];
+            value_name = code->getName().id;
+            if (gen.nvt.find(value_name) != gen.nvt.end()) {
+                value = gen.nvt[value_name];
+            } else {
+                value = nullptr;
+            }
         }
     }
 
@@ -100,19 +143,80 @@ public:
     virtual void run(CodeCall *code) {
         if (comptime) {
             if (code->isExec()) {
-                runAll(code->getTarget());
-                runAll(code->getArgument());
-            } else {
                 type_array.push_back(
                     (
                         (CodeLiteral<long> *) code->getTarget()
                     )->getValue()
                 );
                 runAll(code->getArgument());
+            } else {
+                runAll(code->getTarget());
+                runAll(code->getArgument());
             }
         } else {
             runAll(code->getTarget());
-            runAll(code->getArgument());
+            if (value) {
+                // TODO
+            } else {
+                std::string name = value_name;
+
+                if (name == "__locate") {
+                    runAll(code->getArgument());
+                    gen.setInsertBlock(code_body[label_id]);
+                } else if (name == "__goto") {
+                    runAll(code->getArgument());
+                    value = gen.unConditionJump(code_body[label_id]);
+                } else if (name == "__branch") {
+                    auto nextbr = gen.createBlock(
+                        "tag__" + std::to_string((size_t) code),
+                        func
+                    );
+
+                    runAll(code->getArgument());
+                    value = gen.conditionJump(
+                        value,
+                        nextbr,
+                        code_body[label_id]
+                    );
+                    gen.setInsertBlock(nextbr);
+                } else if (name == "__assign") {
+                    runAll(code->getArgument());
+                    if (value_tuple.size() == 2) {
+                        value = gen.setValue(value_tuple[0], value_tuple[1]);
+                    }
+                } else if (name == "__add") {
+                    runAll(code->getArgument());
+                    if (value_tuple.size() == 2) {
+                        value = gen.expression('+', value_tuple[0], value_tuple[1]);
+                    }
+                } else if (name == "__sub") {
+                    runAll(code->getArgument());
+                    if (value_tuple.size() == 2) {
+                        value = gen.expression('-', value_tuple[0], value_tuple[1]);
+                    }
+                } else if (name == "__less") {
+                    runAll(code->getArgument());
+                    if (value_tuple.size() == 2) {
+                        value = gen.expression('<', value_tuple[0], value_tuple[1]);
+                    }
+                } else {
+                    std::cout << "func: " << name << '\n';
+                    runAll(code->getArgument());
+                    value = gen.integerNum(233333); // place holder
+                    // auto iter = env->queryAll(value_name);
+                    // if (iter.first != iter.second) {
+                    //     runAll(code->getArgument());
+
+                    //     auto fx = gen.getFuncName("block_" + std::to_string(
+                    //         (size_t) iter.first->second)
+                    //     );
+
+                    //     std::cout << fx;
+                    //     gen.call(fx, value_tuple);
+                    // }
+                }
+
+            }
         }
         // llvm::BasicBlock *createBlock(const std::string &name, llvm::Function *func);
         // void setInsertBlock(llvm::BasicBlock *block);// need to set the block to insert the code
@@ -149,7 +253,7 @@ public:
         while (code_body.size() <= code->getId()) {
             code_body.push_back(
                 gen.createBlock(
-                    "SubBlock__" + std::to_string(code_body.size()),
+                    "label__" + std::to_string(code_body.size()),
                     func
                 )
             );
@@ -159,18 +263,26 @@ public:
             label_id = code->getId();
             value = nullptr;
         } else {
-            // notice: this design is reserved (for runtime jump & continuation etc)
-            value = gen.integerNum((size_t) code->getId());
+            label_id = code->getId();
+            value = nullptr;
+            // // notice: this design is reserved (for runtime jump & continuation etc)
+            // value = gen.integerNum((size_t) code->getId());
         }
     }
 
     virtual void run(CodeBlock *code) {
         if (comptime) {
             CodeVisitorTranslateLLVM(code->getBlock());
-            gen.setInsertBlock(code_current);
+            // for inline anonymous class
+            if (code_current) {
+                gen.setInsertBlock(code_current);
+            }
         } else {
-            // notice: this design is reserved (for RTTI etc)
-            value = gen.integerNum((size_t) code->getBlock());
+            // CodeVisitorTranslateLLVM(code->getBlock());
+            // // for inline anonymous class
+            // if (code_current) {
+            //     gen.setInsertBlock(code_current);
+            // }
         }
     }
 };
