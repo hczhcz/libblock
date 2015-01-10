@@ -22,8 +22,6 @@ private:
     Code *next;
 
 public:
-    Block *__type;
-
     static inline Code *pack(Code *&left, Code *right) {
         if (!left) {
             left = right;
@@ -88,8 +86,6 @@ struct field_t {
     name_t name;
     Code *code;
 
-    Block *__type;
-
     inline field_t(
         const Mode to_mode, bool to_import, bool to_hidden,
         name_t &&to_name, Code *to_code
@@ -151,8 +147,8 @@ public:
     inline Block() {}
 
     virtual ~Block() {
-        for (BlockInstance *iter: instances) {
-            delete iter;
+        for (BlockInstance *i: instances) {
+            delete i;
         }
     }
 
