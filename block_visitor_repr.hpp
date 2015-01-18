@@ -56,9 +56,6 @@ public:
             putIndent();
 
             switch (i.mode) {
-            case argument_t::Mode::M_TYPE:
-                out << "type ";
-                break;
             case argument_t::Mode::M_IN:
                 out << "in ";
                 break;

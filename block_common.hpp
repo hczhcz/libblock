@@ -58,7 +58,6 @@ struct name_t {
 
 struct argument_t {
     enum Mode {
-        M_TYPE,
         M_IN,
         M_OUT,
         M_VAR
