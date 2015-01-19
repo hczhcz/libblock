@@ -49,50 +49,62 @@ public:
         out << '{';
         ++indent;
 
-        putIndent();
-        out << "arguments:";
-        ++indent;
-        for (const argument_t &i: env->getArguments()) {
+        if (!env->getArguments().empty()) {
             putIndent();
+            out << "arguments:";
+            ++indent;
+            for (const argument_t &i: env->getArguments()) {
+                putIndent();
 
-            switch (i.mode) {
-            case argument_t::Mode::M_IN:
-                out << "in ";
-                break;
-            case argument_t::Mode::M_OUT:
-                out << "out ";
-                break;
-            case argument_t::Mode::M_VAR:
-                out << "var ";
-                break;
-            default:
-                // never reach
-                throw libblock::error_t("internal error");
+                switch (i.mode) {
+                case argument_t::Mode::M_IN:
+                    out << "in ";
+                    break;
+                case argument_t::Mode::M_OUT:
+                    out << "out ";
+                    break;
+                case argument_t::Mode::M_VAR:
+                    out << "var ";
+                    break;
+                default:
+                    // never reach
+                    throw libblock::error_t("internal error");
+                }
+
+                out << i.name.id;
             }
-
-            out << i.name.id;
+            --indent;
         }
-        --indent;
 
-        putIndent();
-        out << "type:";
-        putFields(env->getMemberType());
+        if (!env->getMemberType().empty()) {
+            putIndent();
+            out << "type:";
+            putFields(env->getMemberType());
+        }
 
-        putIndent();
-        out << "expr:";
-        putFields(env->getMemberExpr());
+        if (!env->getMemberExpr().empty()) {
+            putIndent();
+            out << "expr:";
+            putFields(env->getMemberExpr());
+        }
 
-        putIndent();
-        out << "var:";
-        putFields(env->getMemberVar());
+        if (!env->getMemberVar().empty()) {
+            putIndent();
+            out << "var:";
+            putFields(env->getMemberVar());
+        }
 
-        putIndent();
-        out << "static:";
-        putFields(env->getMemberStatic());
+        if (!env->getMemberStatic().empty()) {
+            putIndent();
+            out << "static:";
+            putFields(env->getMemberStatic());
+        }
 
-        putIndent();
-        out << "fast:";
-        putFields(env->getMemberFast());
+        if (!env->getMemberFast().empty()) {
+            putIndent();
+            out << "fast:";
+            putFields(env->getMemberFast());
+        }
 
         --indent;
         putIndent();
